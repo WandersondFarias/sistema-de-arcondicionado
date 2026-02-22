@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="./img/ar-condicionado-1.jpg" type="image/png" />
+  <title>Loja de Ar Condicionado TGS - Controle Financeiro</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <img src="./img/ar-condicionado-1.jpg" alt="Logo Ar Condicionado" class="logo-header" />
+        <div class="brand-text">
+          <h1>Loja de Ar Condicionado TGS</h1>
+          <p>Controle Financeiro • Ordens de Serviço</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn ghost" id="btnLimparDados" type="button">
+          <i class="fa-solid fa-trash"></i> Limpar Dados
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SERVIÇOS -->
+  <section class="servicos-section">
+    <div class="section-title">
+      <h2>Nossos Serviços</h2>
+      <p>Vendas, instalação e manutenção com padrão profissional.</p>
+    </div>
+
+    <div class="servicos-container">
+      <div class="servico-card">
+        <h3>🌬️ Vendas de Equipamentos</h3>
+        <p>Fornecemos os melhores equipamentos de ar condicionado do mercado.</p>
+      </div>
+      <div class="servico-card">
+        <h3>🛠️ Instalação</h3>
+        <p>Instalação rápida e segura por profissionais especializados.</p>
+      </div>
+      <div class="servico-card">
+        <h3>🧼 Higienização</h3>
+        <p>Higienização completa dos filtros e dutos do ar condicionado.</p>
+      </div>
+      <div class="servico-card">
+        <h3>🔧 Manutenção Preventiva</h3>
+        <p>Mantenha seu equipamento sempre em dia com manutenções periódicas.</p>
+      </div>
+      <div class="servico-card">
+        <h3>📞 Assistência Técnica</h3>
+        <p>Suporte técnico rápido e eficiente em qualquer horário.</p>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <!-- DASHBOARD -->
+    <section class="dashboard">
+      <div class="card kpi">
+        <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-label">Clientes</div>
+          <div class="kpi-value" id="kpiClientes">0</div>
+        </div>
+      </div>
+
+      <div class="card kpi">
+        <div class="kpi-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-label">Ordens</div>
+          <div class="kpi-value" id="kpiOrdens">0</div>
+        </div>
+      </div>
+
+      <div class="card kpi">
+        <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-label">Entradas</div>
+          <div class="kpi-value" id="totalEntrada">R$ 0,00</div>
+        </div>
+      </div>
+
+      <div class="card kpi">
+        <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-label">Saídas</div>
+          <div class="kpi-value" id="totalSaida">R$ 0,00</div>
+        </div>
+      </div>
+
+      <div class="card kpi highlight">
+        <div class="kpi-icon"><i class="fa-solid fa-wallet"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-label">Saldo</div>
+          <div class="kpi-value" id="saldo">R$ 0,00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CADASTRO CLIENTE -->
+    <section class="card">
+      <div class="card-header">
+        <h2>Cadastro de Cliente</h2>
+        <p>Cadastre seus clientes para emitir ordens de serviço rapidamente.</p>
+      </div>
+
+      <form id="formCliente" class="grid-form">
+        <input type="text" id="nome" placeholder="Nome" required />
+        <input type="text" id="telefone" placeholder="Telefone" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="text" id="endereco" placeholder="Endereço" required />
+        <button class="btn primary" type="submit"><i class="fa-solid fa-user-plus"></i> Cadastrar Cliente</button>
+      </form>
+    </section>
+
+    <!-- CLIENTES -->
+    <section class="card">
+      <div class="card-header">
+        <h2>Clientes Cadastrados</h2>
+        <p>Edite ou exclua clientes quando necessário.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table id="tabelaClientes">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>Email</th>
+              <th>Endereço</th>
+              <th class="th-actions">Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ORDEM DE SERVIÇO -->
+    <section class="card">
+      <div class="card-header">
+        <h2>Emitir Ordem de Serviço</h2>
+        <p>Preencha os dados e registre como entrada ou saída. Pagamento pode ser marcado depois na tabela.</p>
+      </div>
+
+      <form id="formOrdem" class="grid-form">
+        <select id="clienteSelect" required>
+          <option value="">Selecione um cliente</option>
+        </select>
+
+        <input type="text" id="enderecoCliente" readonly placeholder="Endereço do cliente" />
+
+        <select id="servico" required>
+          <option value="">Selecione o Serviço</option>
+          <option value="Vendas de Equipamentos">Vendas de Equipamentos</option>
+          <option value="Instalação">Instalação</option>
+          <option value="Higienização">Higienização</option>
+          <option value="Manutenção Preventiva">Manutenção Preventiva</option>
+          <option value="Assistência Técnica">Assistência Técnica</option>
+        </select>
+
+        <input type="number" id="valor" placeholder="Valor (R$)" step="0.01" required />
+
+        <input type="datetime-local" id="dataHora" required />
+
+        <select id="tipo" required>
+          <option value="">Tipo</option>
+          <option value="entrada">Entrada</option>
+          <option value="saida">Saída</option>
+        </select>
+
+        <select id="statusOrdem" required>
+          <option value="">Status da Ordem</option>
+          <option value="Pendente">Pendente</option>
+          <option value="Concluído">Concluído</option>
+          <option value="Cancelado">Cancelado</option>
+        </select>
+
+        <input type="text" id="responsavel" placeholder="Responsável pela atividade" required />
+        <input type="text" id="concluidoPor" placeholder="Concluído por (opcional)" />
+        <input type="text" id="assinaturaCliente" placeholder="Assinatura do Cliente" required />
+
+        <button class="btn primary" type="submit"><i class="fa-solid fa-file-circle-plus"></i> Emitir Ordem</button>
+      </form>
+
+      <div class="note">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>
+          <strong>Regras:</strong>
+          <br>• Se a ordem estiver <strong>PAGA</strong>, a edição fica bloqueada.
+          <br>• Pagamento pode ser alternado entre <strong>Pendente</strong> e <strong>Pago</strong> com método (Pix/Dinheiro/Cartão).
+        </span>
+      </div>
+    </section>
+
+    <!-- FILTROS -->
+    <section class="card">
+      <div class="card-header">
+        <h2>Filtrar e Buscar Ordens</h2>
+        <p>Encontre ordens por mês, data específica, texto e pagamento.</p>
+      </div>
+
+      <div class="filters">
+        <form id="formFiltroMes" class="inline-form">
+          <label class="label">Mês</label>
+          <input type="month" id="filtroMes" />
+          <button class="btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
+          <button class="btn ghost" type="button" id="btnMesAnterior"><i class="fa-solid fa-arrow-left"></i> Mês Anterior</button>
+        </form>
+
+        <form id="formFiltroData" class="inline-form">
+          <label class="label">Data</label>
+          <input type="date" id="filtroData" />
+          <button class="btn" type="submit"><i class="fa-solid fa-calendar-day"></i> Buscar</button>
+        </form>
+
+        <div class="inline-form">
+          <label class="label">Busca</label>
+          <input type="text" id="buscaTexto" placeholder="Buscar por cliente, serviço ou responsável..." />
+        </div>
+
+        <div class="inline-form">
+          <label class="label">Pagamento</label>
+          <select id="filtroPagamento">
+            <option value="">Todos</option>
+            <option value="Pendente">Pendente</option>
+            <option value="Pago">Pago</option>
+          </select>
+
+          <button class="btn ghost" type="button" id="btnLimparFiltros"><i class="fa-solid fa-eraser"></i> Limpar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORDENS -->
+    <section class="card">
+      <div class="card-header">
+        <h2>Ordens de Serviço</h2>
+        <p>Gerencie ordens, gere PDF, marque como pago/pendente e acompanhe o financeiro.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table id="tabelaOrdens">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Responsável</th>
+              <th>Serviço</th>
+              <th>Valor</th>
+              <th>Data/Hora</th>
+              <th>Tipo</th>
+              <th>Status</th>
+              <th>Pagamento</th>
+              <th>Método</th>
+              <th class="th-actions">Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-section about">
+        <h3>Sobre Nós</h3>
+        <p>A Loja TGS é especializada na venda e instalação de ar condicionado. Oferecemos higienização, manutenção e assistência técnica com profissionais qualificados.</p>
+      </div>
+
+      <div class="footer-section services">
+        <h3>Nossos Serviços</h3>
+        <ul>
+          <li>🌬️ Vendas de Equipamentos</li>
+          <li>🛠️ Instalação</li>
+          <li>🧼 Higienização</li>
+          <li>🔧 Manutenção Preventiva</li>
+          <li>📞 Assistência Técnica</li>
+        </ul>
+      </div>
+
+      <div class="footer-section contact">
+        <h3>Contato</h3>
+        <p><strong>Endereço:</strong> Av. Nossa Senhora do Desterro 185, Uberaba-MG</p>
+        <p><strong>Telefone:</strong> (34) 99931-9991 / 99979-8788</p>
+        <p><strong>Email:</strong> contato@lojaarcondicionado.com.br</p>
+
+        <div class="social-links">
+          <a href="https://api.whatsapp.com/send?phone=5534999319991" target="_blank" rel="noreferrer">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+          </a>
+          <a href="https://instagram.com/seu_perfil" target="_blank" rel="noreferrer">
+            <i class="fab fa-instagram"></i> Instagram
+          </a>
+          <a href="https://facebook.com/suaempresa" target="_blank" rel="noreferrer">
+            <i class="fab fa-facebook"></i> Facebook
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2025 Loja de Ar Condicionado TGS. Todos os Direitos Reservados. Desenvolvido por Wanderson de Farias.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
