@@ -1,323 +1,2831 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" href="./img/ar-condicionado-1.jpg" type="image/png" />
-  <title>Loja de Ar Condicionado TGS - Controle Financeiro</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TGS Climatização — Sistema de Gestão</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      :root {
+        --bg: #0a0e1a;
+        --panel: #131b2e;
+        --panel2: #192036;
+        --panel3: #1f2844;
+        --border: rgba(255, 255, 255, 0.06);
+        --border2: rgba(255, 255, 255, 0.11);
+        --text: #e8edf5;
+        --text2: #8b9ab5;
+        --text3: #4f607a;
+        --blue: #3b82f6;
+        --blue-d: #2563eb;
+        --blue-g: rgba(59, 130, 246, 0.15);
+        --green: #22c55e;
+        --green-g: rgba(34, 197, 94, 0.13);
+        --red: #ef4444;
+        --red-g: rgba(239, 68, 68, 0.13);
+        --amber: #f59e0b;
+        --amber-g: rgba(245, 158, 11, 0.13);
+        --purple: #a855f7;
+        --purple-g: rgba(168, 85, 247, 0.13);
+        --cyan: #06b6d4;
+        --r: 14px;
+        --rs: 10px;
+        --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        --ease: cubic-bezier(0.4, 0, 0.2, 1);
+        --sw: 240px;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      input,
+      select {
+        font-family: inherit;
+      }
+      a {
+        text-decoration: none;
+      }
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--panel3);
+        border-radius: 99px;
+      }
 
-  <link rel="stylesheet" href="style.css" />
+      /* LAYOUT */
+      .wrap {
+        display: flex;
+        min-height: 100vh;
+      }
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+      /* SIDEBAR */
+      .sidebar {
+        width: var(--sw);
+        background: var(--panel);
+        border-right: 1px solid var(--border);
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s var(--ease);
+      }
+      .sb-brand {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 20px 16px 16px;
+        border-bottom: 1px solid var(--border);
+      }
+      .sb-icon {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, var(--blue-d), #1e40af);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: #fff;
+        box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+        flex-shrink: 0;
+      }
+      .sb-name {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--text);
+      }
+      .sb-sub {
+        font-size: 0.7rem;
+        color: var(--text3);
+        margin-top: 1px;
+      }
+      .sb-nav {
+        flex: 1;
+        padding: 12px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        overflow-y: auto;
+      }
+      .nav-grp {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        padding: 8px 10px 3px;
+      }
+      .nav-a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 11px;
+        border-radius: var(--rs);
+        color: var(--text2);
+        font-size: 0.86rem;
+        font-weight: 500;
+        transition: all 0.14s;
+        border: 1px solid transparent;
+      }
+      .nav-a i {
+        width: 17px;
+        text-align: center;
+        font-size: 0.92rem;
+        flex-shrink: 0;
+      }
+      .nav-a:hover {
+        background: var(--panel2);
+        color: var(--text);
+      }
+      .nav-a.active {
+        background: linear-gradient(
+          135deg,
+          rgba(59, 130, 246, 0.18),
+          rgba(37, 99, 235, 0.08)
+        );
+        color: #93c5fd;
+        border-color: rgba(59, 130, 246, 0.18);
+      }
+      .nav-a.active i {
+        color: var(--blue);
+      }
+      .sb-foot {
+        padding: 12px 8px;
+        border-top: 1px solid var(--border);
+      }
+      .btn-clr {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 9px;
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.18);
+        border-radius: var(--rs);
+        color: #f87171;
+        font-size: 0.83rem;
+        font-weight: 600;
+        transition: all 0.14s;
+      }
+      .btn-clr:hover {
+        background: rgba(239, 68, 68, 0.15);
+        border-color: rgba(239, 68, 68, 0.3);
+      }
 
-  <!-- jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-</head>
+      /* TOPBAR */
+      .topbar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 54px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 15px;
+        z-index: 150;
+      }
+      .tb-logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.92rem;
+        font-weight: 800;
+        color: var(--text);
+      }
+      .tb-logo i {
+        color: var(--blue);
+      }
+      .hamburger {
+        width: 35px;
+        height: 35px;
+        background: var(--panel2);
+        border: 1px solid var(--border2);
+        border-radius: 9px;
+        color: var(--text);
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-<body>
-  <!-- HEADER -->
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand">
-        <img src="./img/ar-condicionado-1.jpg" alt="Logo Ar Condicionado" class="logo-header" />
-        <div class="brand-text">
-          <h1>Loja de Ar Condicionado TGS</h1>
-          <p>Controle Financeiro • Ordens de Serviço</p>
-        </div>
-      </div>
+      /* MAIN */
+      .main {
+        margin-left: var(--sw);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
 
-      <div class="header-actions">
-        <button class="btn ghost" id="btnLimparDados" type="button">
-          <i class="fa-solid fa-trash"></i> Limpar Dados
+      /* TOP STRIP */
+      .top-strip {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+        padding: 13px 26px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .pg-h {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--text);
+      }
+      .pg-s {
+        font-size: 0.8rem;
+        color: var(--text3);
+        margin-top: 2px;
+      }
+      .clock {
+        background: var(--panel2);
+        border: 1px solid var(--border2);
+        padding: 5px 13px;
+        border-radius: 99px;
+        font-size: 0.8rem;
+        color: var(--text2);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+
+      /* PAGE */
+      .pg {
+        flex: 1;
+        padding: 22px 26px 40px;
+      }
+      .sec {
+        display: none;
+      }
+      .sec.active {
+        display: block;
+      }
+
+      /* ===== DASHBOARD KPI ROW ===== */
+      .kpi-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 13px;
+        margin-bottom: 22px;
+      }
+
+      .kpi {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 18px;
+        position: relative;
+        overflow: hidden;
+        transition:
+          transform 0.18s,
+          box-shadow 0.18s;
+      }
+      .kpi:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+      }
+      .kpi-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .kpi-ico {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+      .kpi-badge {
+        font-size: 0.71rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 99px;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        white-space: nowrap;
+      }
+      .b-up {
+        background: var(--green-g);
+        color: var(--green);
+      }
+      .b-down {
+        background: var(--red-g);
+        color: var(--red);
+      }
+      .b-neu {
+        background: var(--blue-g);
+        color: var(--blue);
+      }
+      .kpi-val {
+        font-size: 1.65rem;
+        font-weight: 900;
+        color: var(--text);
+        line-height: 1.1;
+      }
+      .kpi-lbl {
+        font-size: 0.74rem;
+        color: var(--text3);
+        margin-top: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        font-weight: 600;
+      }
+      .kpi-div {
+        height: 1px;
+        background: var(--border);
+        margin: 12px 0;
+      }
+      .kpi-ft {
+        font-size: 0.74rem;
+        color: var(--text3);
+      }
+
+      .kpi.c-blue {
+        border-color: rgba(59, 130, 246, 0.12);
+      }
+      .kpi.c-blue .kpi-ico {
+        background: var(--blue-g);
+        color: var(--blue);
+      }
+      .kpi.c-grn {
+        border-color: rgba(34, 197, 94, 0.12);
+      }
+      .kpi.c-grn .kpi-ico {
+        background: var(--green-g);
+        color: var(--green);
+      }
+      .kpi.c-red {
+        border-color: rgba(239, 68, 68, 0.12);
+      }
+      .kpi.c-red .kpi-ico {
+        background: var(--red-g);
+        color: var(--red);
+      }
+      .kpi.c-pur {
+        border-color: rgba(168, 85, 247, 0.12);
+      }
+      .kpi.c-pur .kpi-ico {
+        background: var(--purple-g);
+        color: var(--purple);
+      }
+
+      /* SALDO ROW */
+      .kpi-saldo-row {
+        grid-column: 1/-1;
+        background: var(--panel);
+        border: 1px solid rgba(245, 158, 11, 0.14);
+        border-radius: var(--r);
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .kpi-saldo-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-shrink: 0;
+      }
+      .kpi-saldo-ico {
+        width: 50px;
+        height: 50px;
+        border-radius: 13px;
+        background: var(--amber-g);
+        color: var(--amber);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+      }
+      .kpi-saldo-val {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--text);
+        line-height: 1;
+      }
+      .kpi-saldo-lbl {
+        font-size: 0.74rem;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .kpi-saldo-bar-wrap {
+        flex: 1;
+        min-width: 180px;
+      }
+      .kpi-saldo-bar {
+        height: 7px;
+        background: var(--panel2);
+        border-radius: 99px;
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .kpi-saldo-fill {
+        height: 100%;
+        width: 50%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, var(--amber), #fbbf24);
+        transition: width 0.8s var(--ease);
+      }
+
+      /* DASH GRID */
+      .dash-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+
+      /* PANEL */
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        overflow: hidden;
+        margin-bottom: 16px;
+      }
+      .panel:last-child {
+        margin-bottom: 0;
+      }
+      .ph {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--border);
+      }
+      .ph-title {
+        font-size: 0.93rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .ph-sub {
+        font-size: 0.75rem;
+        color: var(--text3);
+        margin-top: 2px;
+      }
+      .pb {
+        padding: 16px 18px;
+      }
+
+      /* SERVICOS */
+      .sv-item {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 11px 18px;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.13s;
+      }
+      .sv-item:last-child {
+        border-bottom: none;
+      }
+      .sv-item:hover {
+        background: var(--panel2);
+      }
+      .sv-ico {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+      }
+      .sv-name {
+        font-size: 0.86rem;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .sv-desc {
+        font-size: 0.73rem;
+        color: var(--text3);
+      }
+
+      /* FIN ROWS */
+      .fr {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 11px 18px;
+        border-bottom: 1px solid var(--border);
+      }
+      .fr:last-child {
+        border-bottom: none;
+      }
+      .fr-lbl {
+        font-size: 0.86rem;
+        color: var(--text2);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .fr-lbl i {
+        width: 13px;
+        text-align: center;
+      }
+      .fr-val {
+        font-size: 0.92rem;
+        font-weight: 800;
+      }
+
+      /* RECENTES */
+      .rec-item {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 10px 18px;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.13s;
+      }
+      .rec-item:last-child {
+        border-bottom: none;
+      }
+      .rec-item:hover {
+        background: var(--panel2);
+      }
+      .rec-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 99px;
+        flex-shrink: 0;
+      }
+      .rec-nome {
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .rec-serv {
+        font-size: 0.72rem;
+        color: var(--text3);
+      }
+      .rec-val {
+        font-size: 0.88rem;
+        font-weight: 800;
+        flex-shrink: 0;
+      }
+
+      /* SECTION HEADING */
+      .s-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .s-head h2 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--text);
+      }
+      .s-head p {
+        font-size: 0.8rem;
+        color: var(--text3);
+        margin-top: 2px;
+      }
+
+      /* FORMS */
+      .fg {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 12px;
+        padding: 18px;
+      }
+      .ff {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .ff.full {
+        grid-column: 1/-1;
+      }
+      .fl {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+      .iw {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .iw i {
+        position: absolute;
+        left: 11px;
+        color: var(--text3);
+        font-size: 0.85rem;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .iw input,
+      .iw select,
+      .ff input,
+      .ff select {
+        width: 100%;
+        padding: 9px 11px;
+        background: var(--panel2);
+        border: 1px solid var(--border2);
+        border-radius: var(--rs);
+        color: var(--text);
+        font-size: 0.88rem;
+        outline: none;
+        transition:
+          border-color 0.14s,
+          box-shadow 0.14s;
+        appearance: auto;
+      }
+      .iw input,
+      .iw select {
+        padding-left: 34px;
+      }
+      .iw input:focus,
+      .iw select:focus,
+      .ff input:focus,
+      .ff select:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px var(--blue-g);
+        background: var(--panel3);
+      }
+      .iw input::placeholder,
+      .ff input::placeholder {
+        color: var(--text3);
+      }
+      input[readonly] {
+        opacity: 0.5;
+        cursor: not-allowed !important;
+      }
+      option {
+        background: var(--panel2);
+      }
+      .fa-row {
+        grid-column: 1/-1;
+        display: flex;
+        gap: 9px;
+        align-items: center;
+      }
+      .coll {
+        overflow: hidden;
+        max-height: 2000px;
+        transition: max-height 0.35s var(--ease);
+      }
+      .coll.closed {
+        max-height: 0;
+      }
+
+      /* BUTTONS */
+      .btn-p {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 9px 18px;
+        background: linear-gradient(135deg, var(--blue), var(--blue-d));
+        color: #fff;
+        border: none;
+        border-radius: var(--rs);
+        font-size: 0.86rem;
+        font-weight: 700;
+        transition:
+          transform 0.13s,
+          box-shadow 0.13s;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+        white-space: nowrap;
+      }
+      .btn-p:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(37, 99, 235, 0.43);
+      }
+      .btn-p.danger {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
+      }
+      .btn-g {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: transparent;
+        border: 1px solid var(--border2);
+        border-radius: var(--rs);
+        color: var(--text2);
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: all 0.13s;
+        white-space: nowrap;
+      }
+      .btn-g:hover {
+        background: var(--panel2);
+        color: var(--text);
+      }
+
+      /* TABLE BUTTONS */
+      .tb {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 8px;
+        border-radius: 7px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        border: 1px solid transparent;
+        transition: all 0.11s;
+        white-space: nowrap;
+      }
+      .tb:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+      .tb-p {
+        background: rgba(34, 197, 94, 0.1);
+        color: #86efac;
+        border-color: rgba(34, 197, 94, 0.2);
+      }
+      .tb-p:hover {
+        background: rgba(34, 197, 94, 0.2);
+      }
+      .tb-e {
+        background: rgba(59, 130, 246, 0.1);
+        color: #93c5fd;
+        border-color: rgba(59, 130, 246, 0.2);
+      }
+      .tb-e:hover {
+        background: rgba(59, 130, 246, 0.2);
+      }
+      .tb-d {
+        background: rgba(239, 68, 68, 0.1);
+        color: #fca5a5;
+        border-color: rgba(239, 68, 68, 0.2);
+      }
+      .tb-d:hover {
+        background: rgba(239, 68, 68, 0.2);
+      }
+      .tb-f {
+        background: rgba(245, 158, 11, 0.1);
+        color: #fcd34d;
+        border-color: rgba(245, 158, 11, 0.2);
+      }
+      .tb-f:hover {
+        background: rgba(245, 158, 11, 0.2);
+      }
+
+      /* FILTERS */
+      .fbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: flex-end;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--border);
+      }
+      .fi {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .fi-lbl {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+      .fi-row {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .fi-inp {
+        background: var(--panel2);
+        border: 1px solid var(--border2);
+        border-radius: var(--rs);
+        color: var(--text);
+        padding: 8px 10px;
+        font-size: 0.83rem;
+        outline: none;
+        transition: border-color 0.13s;
+      }
+      .fi-inp:focus {
+        border-color: var(--blue);
+      }
+      .sw-wrap {
+        position: relative;
+      }
+      .sw-wrap i {
+        position: absolute;
+        left: 9px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text3);
+        font-size: 0.8rem;
+        pointer-events: none;
+      }
+      .sw-wrap input {
+        padding-left: 28px;
+      }
+      .btn-flt {
+        padding: 8px 11px;
+        background: var(--blue);
+        border: none;
+        border-radius: var(--rs);
+        color: #fff;
+        font-size: 0.82rem;
+        transition: background 0.13s;
+      }
+      .btn-flt:hover {
+        background: var(--blue-d);
+      }
+
+      /* TABLE */
+      .tw {
+        overflow-x: auto;
+      }
+      .dt {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 860px;
+      }
+      .dt thead th {
+        padding: 10px 13px;
+        text-align: left;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        background: var(--panel2);
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+      }
+      .dt tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background 0.1s;
+      }
+      .dt tbody tr:last-child {
+        border-bottom: none;
+      }
+      .dt tbody tr:hover {
+        background: rgba(255, 255, 255, 0.022);
+      }
+      .dt tbody td {
+        padding: 11px 13px;
+        font-size: 0.84rem;
+        color: var(--text2);
+        vertical-align: middle;
+        white-space: nowrap;
+      }
+      .td-b {
+        color: var(--text) !important;
+        font-weight: 700;
+      }
+      .td-r {
+        text-align: right;
+      }
+      .td-act {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      /* BADGES */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 9px;
+        border-radius: 99px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        border: 1px solid transparent;
+        white-space: nowrap;
+      }
+      .bg-s {
+        background: rgba(34, 197, 94, 0.12);
+        color: #86efac;
+        border-color: rgba(34, 197, 94, 0.22);
+      }
+      .bg-w {
+        background: rgba(245, 158, 11, 0.12);
+        color: #fcd34d;
+        border-color: rgba(245, 158, 11, 0.22);
+      }
+      .bg-d {
+        background: rgba(239, 68, 68, 0.12);
+        color: #fca5a5;
+        border-color: rgba(239, 68, 68, 0.22);
+      }
+      .bg-i {
+        background: rgba(59, 130, 246, 0.12);
+        color: #93c5fd;
+        border-color: rgba(59, 130, 246, 0.22);
+      }
+
+      /* EMPTY */
+      .empty {
+        text-align: center;
+        padding: 48px 16px;
+        color: var(--text3);
+      }
+      .empty i {
+        font-size: 2.1rem;
+        display: block;
+        margin-bottom: 10px;
+        opacity: 0.28;
+      }
+      .empty p {
+        font-size: 0.88rem;
+      }
+
+      /* NOTE */
+      .note {
+        margin: 0 18px 14px;
+        padding: 10px 13px;
+        background: rgba(59, 130, 246, 0.07);
+        border: 1px solid rgba(59, 130, 246, 0.14);
+        border-radius: var(--rs);
+        font-size: 0.81rem;
+        color: var(--text2);
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .note i {
+        color: var(--blue);
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+
+      /* FIN PAGE */
+      .fin-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 13px;
+        margin-bottom: 16px;
+      }
+      .fin-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 22px 18px;
+        text-align: center;
+      }
+      .fin-ico {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin: 0 auto 10px;
+      }
+      .fin-lbl {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 5px;
+      }
+      .fin-val {
+        font-size: 1.6rem;
+        font-weight: 900;
+      }
+
+      /* MODAL */
+      .mo {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.72);
+        backdrop-filter: blur(8px);
+        z-index: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      .mo.hidden {
+        display: none;
+      }
+      .mb {
+        background: var(--panel);
+        border: 1px solid var(--border2);
+        border-radius: var(--r);
+        padding: 24px;
+        width: 100%;
+        max-width: 400px;
+        position: relative;
+        animation: mi 0.17s var(--ease);
+      }
+      @keyframes mi {
+        from {
+          opacity: 0;
+          transform: scale(0.95) translateY(5px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .mc {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 29px;
+        height: 29px;
+        background: var(--panel2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text2);
+        font-size: 0.82rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.12s;
+      }
+      .mc:hover {
+        background: var(--panel3);
+        color: var(--text);
+      }
+      .mt {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 3px;
+      }
+      .md {
+        font-size: 0.82rem;
+        color: var(--text3);
+        margin-bottom: 16px;
+      }
+      .mf {
+        margin-bottom: 11px;
+      }
+      .mf label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 4px;
+      }
+      .mf input,
+      .mf select {
+        width: 100%;
+        padding: 9px 11px;
+        background: var(--panel2);
+        border: 1px solid var(--border2);
+        border-radius: var(--rs);
+        color: var(--text);
+        font-size: 0.88rem;
+        outline: none;
+        transition: border-color 0.13s;
+        appearance: auto;
+      }
+      .mf input:focus,
+      .mf select:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px var(--blue-g);
+      }
+      .ma {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .ma .btn-p {
+        flex: 1;
+      }
+      .btn-cc {
+        flex: 1;
+        padding: 9px;
+        background: var(--panel2);
+        border: 1px solid var(--border2);
+        border-radius: var(--rs);
+        color: var(--text2);
+        font-size: 0.86rem;
+        font-weight: 700;
+        transition: all 0.12s;
+      }
+      .btn-cc:hover {
+        background: var(--panel3);
+        color: var(--text);
+      }
+
+      /* TOAST */
+      .toast {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        z-index: 999;
+        background: var(--panel2);
+        border: 1px solid var(--border2);
+        border-radius: var(--rs);
+        padding: 12px 16px;
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: var(--shadow);
+        max-width: 310px;
+        animation: ti 0.18s var(--ease);
+      }
+      .toast.hidden {
+        display: none;
+      }
+      .toast i {
+        font-size: 0.92rem;
+        flex-shrink: 0;
+      }
+      @keyframes ti {
+        from {
+          opacity: 0;
+          transform: translateY(7px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* FOOTER */
+      .ft {
+        background: var(--panel);
+        border-top: 1px solid var(--border);
+        margin-left: var(--sw);
+      }
+      .ft-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        padding: 26px;
+        max-width: 1200px;
+      }
+      .ft-h {
+        font-size: 0.83rem;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 9px;
+      }
+      .ft p,
+      .ft li {
+        font-size: 0.77rem;
+        color: var(--text3);
+        line-height: 1.8;
+      }
+      .ft ul {
+        list-style: none;
+      }
+      .ft a {
+        color: var(--text3);
+        transition: color 0.13s;
+      }
+      .ft a:hover {
+        color: var(--blue);
+      }
+      .ft-soc {
+        display: flex;
+        gap: 7px;
+        margin-top: 9px;
+      }
+      .ft-sb {
+        width: 33px;
+        height: 33px;
+        background: var(--panel2);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        color: var(--text2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.92rem;
+        transition: all 0.13s;
+      }
+      .ft-sb:hover {
+        background: var(--blue-g);
+        color: var(--blue);
+        border-color: rgba(59, 130, 246, 0.22);
+      }
+      .ft-copy {
+        border-top: 1px solid var(--border);
+        padding: 13px 26px;
+        font-size: 0.73rem;
+        color: var(--text3);
+        text-align: center;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 1080px) {
+        .kpi-row {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .kpi-saldo-row {
+          grid-column: 1/-1;
+        }
+        .dash-grid {
+          grid-template-columns: 1fr;
+        }
+        .fin-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 800px) {
+        :root {
+          --sw: 0px;
+        }
+        .sidebar {
+          transform: translateX(-240px);
+          width: 240px;
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .topbar {
+          display: flex;
+        }
+        .main {
+          padding-top: 54px;
+        }
+        .top-strip {
+          padding: 11px 15px;
+        }
+        .pg {
+          padding: 15px 15px 30px;
+        }
+        .ft {
+          margin-left: 0;
+        }
+        .ft-grid {
+          grid-template-columns: 1fr;
+          padding: 18px 15px;
+        }
+        .fg {
+          grid-template-columns: 1fr;
+        }
+        .kpi-row {
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+      }
+      @media (max-width: 520px) {
+        .kpi-row {
+          grid-template-columns: 1fr;
+        }
+        .fin-grid {
+          grid-template-columns: 1fr;
+        }
+        .kpi-saldo-row {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .kpi-saldo-bar-wrap {
+          width: 100%;
+          margin-top: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="mo" class="mo hidden">
+      <div class="mb">
+        <button class="mc" id="mClose">
+          <i class="fa-solid fa-xmark"></i>
         </button>
+        <div id="mCont"></div>
       </div>
     </div>
-  </header>
+    <div id="toast" class="toast hidden"></div>
 
-  <!-- SERVIÇOS -->
-  <section class="servicos-section">
-    <div class="section-title">
-      <h2>Nossos Serviços</h2>
-      <p>Vendas, instalação e manutenção com padrão profissional.</p>
+    <div class="wrap">
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sb-brand">
+          <div class="sb-icon"><i class="fa-solid fa-snowflake"></i></div>
+          <div>
+            <div class="sb-name">TGS</div>
+            <div class="sb-sub">Climatização</div>
+          </div>
+        </div>
+        <nav class="sb-nav">
+          <div class="nav-grp">Principal</div>
+          <a class="nav-a active" data-sec="dash" href="#"
+            ><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a
+          >
+          <div class="nav-grp" style="margin-top: 6px">Gestão</div>
+          <a class="nav-a" data-sec="cli" href="#"
+            ><i class="fa-solid fa-users"></i><span>Clientes</span></a
+          >
+          <a class="nav-a" data-sec="ord" href="#"
+            ><i class="fa-solid fa-clipboard-list"></i
+            ><span>Ordens de Serviço</span></a
+          >
+          <a class="nav-a" data-sec="fin" href="#"
+            ><i class="fa-solid fa-chart-line"></i><span>Financeiro</span></a
+          >
+        </nav>
+        <div class="sb-foot">
+          <button class="btn-clr" id="btnClr">
+            <i class="fa-solid fa-trash"></i> Limpar Todos os Dados
+          </button>
+        </div>
+      </aside>
+
+      <!-- TOPBAR MOBILE -->
+      <div class="topbar">
+        <button class="hamburger" id="hbg">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="tb-logo">
+          <i class="fa-solid fa-snowflake"></i> TGS Climatização
+        </div>
+        <div style="width: 35px"></div>
+      </div>
+
+      <!-- MAIN -->
+      <div class="main">
+        <div class="top-strip">
+          <div>
+            <div class="pg-h" id="pgH">Dashboard</div>
+            <div class="pg-s" id="pgS">Visão geral do seu negócio</div>
+          </div>
+          <div class="clock" id="clk"></div>
+        </div>
+
+        <div class="pg">
+          <!-- DASHBOARD -->
+          <div class="sec active" id="sec-dash">
+            <div class="kpi-row">
+              <div class="kpi c-blue">
+                <div class="kpi-top">
+                  <div class="kpi-ico"><i class="fa-solid fa-users"></i></div>
+                  <span class="kpi-badge b-neu"
+                    ><i class="fa-solid fa-database"></i> Total</span
+                  >
+                </div>
+                <div class="kpi-val" id="kpiC">0</div>
+                <div class="kpi-lbl">Clientes Cadastrados</div>
+                <div class="kpi-div"></div>
+                <div class="kpi-ft">Base de clientes no sistema</div>
+              </div>
+              <div class="kpi c-pur">
+                <div class="kpi-top">
+                  <div class="kpi-ico">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                  </div>
+                  <span class="kpi-badge b-neu"
+                    ><i class="fa-solid fa-database"></i> Total</span
+                  >
+                </div>
+                <div class="kpi-val" id="kpiO">0</div>
+                <div class="kpi-lbl">Ordens de Serviço</div>
+                <div class="kpi-div"></div>
+                <div class="kpi-ft">Total de ordens registradas</div>
+              </div>
+              <div class="kpi c-grn">
+                <div class="kpi-top">
+                  <div class="kpi-ico">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                  </div>
+                  <span class="kpi-badge b-up"
+                    ><i class="fa-solid fa-arrow-up"></i> Entrada</span
+                  >
+                </div>
+                <div class="kpi-val" id="kpiEnt">R$ 0,00</div>
+                <div class="kpi-lbl">Total de Entradas</div>
+                <div class="kpi-div"></div>
+                <div class="kpi-ft">Receitas registradas</div>
+              </div>
+              <div class="kpi c-red">
+                <div class="kpi-top">
+                  <div class="kpi-ico">
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                  </div>
+                  <span class="kpi-badge b-down"
+                    ><i class="fa-solid fa-arrow-down"></i> Saída</span
+                  >
+                </div>
+                <div class="kpi-val" id="kpiSai">R$ 0,00</div>
+                <div class="kpi-lbl">Total de Saídas</div>
+                <div class="kpi-div"></div>
+                <div class="kpi-ft">Despesas registradas</div>
+              </div>
+
+              <!-- SALDO FULL -->
+              <div class="kpi-saldo-row">
+                <div class="kpi-saldo-left">
+                  <div class="kpi-saldo-ico">
+                    <i class="fa-solid fa-wallet"></i>
+                  </div>
+                  <div>
+                    <div class="kpi-saldo-lbl">Saldo Atual</div>
+                    <div class="kpi-saldo-val" id="kpiSaldo">R$ 0,00</div>
+                  </div>
+                </div>
+                <div class="kpi-saldo-bar-wrap">
+                  <div class="kpi-saldo-lbl">Proporção Entradas / Saídas</div>
+                  <div class="kpi-saldo-bar">
+                    <div class="kpi-saldo-fill" id="saldoFill"></div>
+                  </div>
+                </div>
+                <span class="kpi-badge b-neu" id="saldoTrend"
+                  ><i class="fa-solid fa-scale-balanced"></i> Equilíbrio</span
+                >
+              </div>
+            </div>
+
+            <!-- DASH GRID -->
+            <div class="dash-grid">
+              <div class="panel">
+                <div class="ph">
+                  <div>
+                    <div class="ph-title">Nossos Serviços</div>
+                    <div class="ph-sub">Soluções em climatização</div>
+                  </div>
+                </div>
+                <div class="sv-item">
+                  <div
+                    class="sv-ico"
+                    style="background: rgba(59, 130, 246, 0.12)"
+                  >
+                    🌬️
+                  </div>
+                  <div class="sv-name">Vendas de Equipamentos</div>
+                </div>
+                <div class="sv-item">
+                  <div
+                    class="sv-ico"
+                    style="background: rgba(168, 85, 247, 0.12)"
+                  >
+                    🛠️
+                  </div>
+                  <div class="sv-name">Instalação</div>
+                </div>
+                <div class="sv-item">
+                  <div
+                    class="sv-ico"
+                    style="background: rgba(6, 182, 212, 0.12)"
+                  >
+                    🧼
+                  </div>
+                  <div class="sv-name">Higienização</div>
+                </div>
+                <div class="sv-item">
+                  <div
+                    class="sv-ico"
+                    style="background: rgba(245, 158, 11, 0.12)"
+                  >
+                    🔧
+                  </div>
+                  <div class="sv-name">Manutenção Preventiva</div>
+                </div>
+                <div class="sv-item">
+                  <div
+                    class="sv-ico"
+                    style="background: rgba(239, 68, 68, 0.12)"
+                  >
+                    📞
+                  </div>
+                  <div class="sv-name">Assistência Técnica</div>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 14px">
+                <div class="panel">
+                  <div class="ph">
+                    <div>
+                      <div class="ph-title">Resumo Financeiro</div>
+                      <div class="ph-sub">Visão geral das finanças</div>
+                    </div>
+                  </div>
+                  <div class="fr">
+                    <div class="fr-lbl">
+                      <i
+                        class="fa-solid fa-arrow-up"
+                        style="color: var(--green)"
+                      ></i
+                      >Entradas
+                    </div>
+                    <div class="fr-val" style="color: var(--green)" id="drEnt">
+                      R$ 0,00
+                    </div>
+                  </div>
+                  <div class="fr">
+                    <div class="fr-lbl">
+                      <i
+                        class="fa-solid fa-arrow-down"
+                        style="color: var(--red)"
+                      ></i
+                      >Saídas
+                    </div>
+                    <div class="fr-val" style="color: var(--red)" id="drSai">
+                      R$ 0,00
+                    </div>
+                  </div>
+                  <div class="fr" style="background: rgba(245, 158, 11, 0.04)">
+                    <div class="fr-lbl">
+                      <i
+                        class="fa-solid fa-wallet"
+                        style="color: var(--amber)"
+                      ></i
+                      ><strong>Saldo</strong>
+                    </div>
+                    <div class="fr-val" id="drSaldo" style="font-size: 1.05rem">
+                      R$ 0,00
+                    </div>
+                  </div>
+                </div>
+                <div class="panel" style="flex: 1">
+                  <div class="ph">
+                    <div>
+                      <div class="ph-title">Últimas Ordens</div>
+                      <div class="ph-sub">5 mais recentes</div>
+                    </div>
+                  </div>
+                  <div id="recList">
+                    <div class="empty" style="padding: 24px 14px">
+                      <i class="fa-solid fa-clipboard-list"></i>
+                      <p>Nenhuma ordem ainda</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CLIENTES -->
+          <div class="sec" id="sec-cli">
+            <div class="s-head">
+              <div>
+                <h2>Clientes</h2>
+                <p>Cadastre e gerencie sua base de clientes</p>
+              </div>
+              <button class="btn-g" id="togCli">
+                <i class="fa-solid fa-plus"></i> Novo Cliente
+              </button>
+            </div>
+            <div class="panel">
+              <div class="ph">
+                <div>
+                  <div class="ph-title">Cadastrar Novo Cliente</div>
+                  <div class="ph-sub">Preencha todos os campos</div>
+                </div>
+              </div>
+              <div class="coll closed" id="fCliWrap">
+                <form id="fCli" class="fg">
+                  <div class="ff">
+                    <div class="fl">Nome Completo *</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-user"></i
+                      ><input
+                        id="fNome"
+                        type="text"
+                        placeholder="Ex: João da Silva"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="ff">
+                    <div class="fl">Telefone *</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-phone"></i
+                      ><input
+                        id="fTel"
+                        type="text"
+                        placeholder="(34) 99999-9999"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="ff">
+                    <div class="fl">Email *</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-envelope"></i
+                      ><input
+                        id="fEmail"
+                        type="email"
+                        placeholder="email@exemplo.com"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="ff full">
+                    <div class="fl">Endereço *</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-location-dot"></i
+                      ><input
+                        id="fEnd"
+                        type="text"
+                        placeholder="Rua, Número, Bairro, Cidade"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="fa-row">
+                    <button class="btn-p" type="submit">
+                      <i class="fa-solid fa-user-plus"></i> Cadastrar</button
+                    ><button
+                      class="btn-g"
+                      type="button"
+                      onclick="fcoll('fCliWrap', 'togCli', 'Novo Cliente')"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="ph">
+                <div>
+                  <div class="ph-title">Clientes Cadastrados</div>
+                  <div class="ph-sub" id="cliLbl">0 clientes</div>
+                </div>
+                <div class="sw-wrap">
+                  <i class="fa-solid fa-magnifying-glass"></i
+                  ><input
+                    class="fi-inp"
+                    id="bCli"
+                    type="text"
+                    placeholder="Buscar..."
+                  />
+                </div>
+              </div>
+              <div class="tw">
+                <table class="dt" id="tCli">
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>Telefone</th>
+                      <th>Email</th>
+                      <th>Endereço</th>
+                      <th class="td-r">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+                <div class="empty hidden" id="empCli">
+                  <i class="fa-solid fa-users-slash"></i>
+                  <p>Nenhum cliente cadastrado</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ORDENS -->
+          <div class="sec" id="sec-ord">
+            <div class="s-head">
+              <div>
+                <h2>Ordens de Serviço</h2>
+                <p>Emita e gerencie ordens</p>
+              </div>
+              <button class="btn-g" id="togOrd">
+                <i class="fa-solid fa-plus"></i> Nova Ordem
+              </button>
+            </div>
+            <div class="panel">
+              <div class="ph">
+                <div>
+                  <div class="ph-title">Emitir Ordem de Serviço</div>
+                  <div class="ph-sub">Preencha os dados abaixo</div>
+                </div>
+              </div>
+              <div class="coll closed" id="fOrdWrap">
+                <form id="fOrd" class="fg">
+                  <div class="ff">
+                    <div class="fl">Cliente *</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-user-tie"></i
+                      ><select id="selCli" required>
+                        <option value="">Selecione um cliente</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="ff">
+                    <div class="fl">Endereço</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-location-dot"></i
+                      ><input
+                        id="endCli"
+                        type="text"
+                        readonly
+                        placeholder="Preenchido automaticamente"
+                      />
+                    </div>
+                  </div>
+                  <div class="ff">
+                    <div class="fl">Serviço *</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-wrench"></i
+                      ><select id="selServ" required>
+                        <option value="">Selecione o serviço</option>
+                        <option>Vendas de Equipamentos</option>
+                        <option>Instalação</option>
+                        <option>Higienização</option>
+                        <option>Manutenção Preventiva</option>
+                        <option>Assistência Técnica</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="ff">
+                    <div class="fl">Valor (R$) *</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-dollar-sign"></i
+                      ><input
+                        id="fVal"
+                        type="number"
+                        placeholder="0,00"
+                        step="0.01"
+                        min="0"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="ff">
+                    <div class="fl">Data e Hora *</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-calendar-days"></i
+                      ><input id="fDT" type="datetime-local" required />
+                    </div>
+                  </div>
+                  <div class="ff">
+                    <div class="fl">Tipo *</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-arrow-right-arrow-left"></i
+                      ><select id="fTipo" required>
+                        <option value="">Tipo</option>
+                        <option value="entrada">💰 Entrada</option>
+                        <option value="saida">💸 Saída</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="ff">
+                    <div class="fl">Status *</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-circle-half-stroke"></i
+                      ><select id="fStatus" required>
+                        <option value="">Status</option>
+                        <option>Pendente</option>
+                        <option>Concluído</option>
+                        <option>Cancelado</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="ff">
+                    <div class="fl">Responsável *</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-id-badge"></i
+                      ><input
+                        id="fResp"
+                        type="text"
+                        placeholder="Nome do técnico"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="ff">
+                    <div class="fl">Concluído por</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-user-check"></i
+                      ><input id="fConc" type="text" placeholder="Opcional" />
+                    </div>
+                  </div>
+                  <div class="ff">
+                    <div class="fl">Assinatura do Cliente *</div>
+                    <div class="iw">
+                      <i class="fa-solid fa-signature"></i
+                      ><input
+                        id="fAss"
+                        type="text"
+                        placeholder="Nome para assinatura"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="fa-row">
+                    <button class="btn-p" type="submit">
+                      <i class="fa-solid fa-file-circle-plus"></i> Emitir Ordem</button
+                    ><button
+                      class="btn-g"
+                      type="button"
+                      onclick="fcoll('fOrdWrap', 'togOrd', 'Nova Ordem')"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
+                <div class="note">
+                  <i class="fa-solid fa-circle-info"></i
+                  ><span
+                    >Ordens com pagamento <strong>PAGO</strong> ficam bloqueadas
+                    para edição. O pagamento pode ser alternado entre Pendente e
+                    Pago com método (Pix / Dinheiro / Cartão).</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="ph">
+                <div class="ph-title">Filtrar Ordens</div>
+                <button class="btn-g" id="btnLimFlt">
+                  <i class="fa-solid fa-eraser"></i> Limpar
+                </button>
+              </div>
+              <div class="fbar">
+                <div class="fi">
+                  <div class="fi-lbl">Mês</div>
+                  <div class="fi-row">
+                    <input
+                      class="fi-inp"
+                      id="fltMes"
+                      type="month"
+                      style="width: 145px"
+                    /><button class="btn-flt" id="btnFltMes">
+                      <i class="fa-solid fa-magnifying-glass"></i></button
+                    ><button
+                      class="btn-g"
+                      id="btnMesAnt"
+                      style="padding: 7px 10px"
+                    >
+                      <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="fi">
+                  <div class="fi-lbl">Data</div>
+                  <div class="fi-row">
+                    <input
+                      class="fi-inp"
+                      id="fltDt"
+                      type="date"
+                      style="width: 145px"
+                    /><button class="btn-flt" id="btnFltDt">
+                      <i class="fa-solid fa-calendar-day"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="fi" style="flex: 1; min-width: 180px">
+                  <div class="fi-lbl">Buscar</div>
+                  <div class="sw-wrap">
+                    <i class="fa-solid fa-magnifying-glass"></i
+                    ><input
+                      class="fi-inp"
+                      id="bOrd"
+                      type="text"
+                      placeholder="Cliente, serviço, responsável..."
+                      style="width: 100%"
+                    />
+                  </div>
+                </div>
+                <div class="fi">
+                  <div class="fi-lbl">Pagamento</div>
+                  <select class="fi-inp" id="fltPag" style="width: 130px">
+                    <option value="">Todos</option>
+                    <option>Pendente</option>
+                    <option>Pago</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="ph">
+                <div>
+                  <div class="ph-title">Ordens Registradas</div>
+                  <div class="ph-sub" id="ordLbl">0 ordens</div>
+                </div>
+              </div>
+              <div class="tw">
+                <table class="dt" id="tOrd">
+                  <thead>
+                    <tr>
+                      <th>Cliente</th>
+                      <th>Responsável</th>
+                      <th>Serviço</th>
+                      <th>Valor</th>
+                      <th>Data/Hora</th>
+                      <th>Tipo</th>
+                      <th>Status</th>
+                      <th>Pagamento</th>
+                      <th>Método</th>
+                      <th class="td-r">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+                <div class="empty hidden" id="empOrd">
+                  <i class="fa-solid fa-clipboard-list"></i>
+                  <p>Nenhuma ordem encontrada</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FINANCEIRO -->
+          <div class="sec" id="sec-fin">
+            <div class="s-head">
+              <div>
+                <h2>Financeiro</h2>
+                <p>Análise financeira completa</p>
+              </div>
+            </div>
+            <div class="fin-grid">
+              <div class="fin-card">
+                <div
+                  class="fin-ico"
+                  style="background: var(--green-g); color: var(--green)"
+                >
+                  <i class="fa-solid fa-arrow-trend-up"></i>
+                </div>
+                <div class="fin-lbl">Total de Entradas</div>
+                <div class="fin-val" style="color: var(--green)" id="finEnt">
+                  R$ 0,00
+                </div>
+              </div>
+              <div class="fin-card">
+                <div
+                  class="fin-ico"
+                  style="background: var(--red-g); color: var(--red)"
+                >
+                  <i class="fa-solid fa-arrow-trend-down"></i>
+                </div>
+                <div class="fin-lbl">Total de Saídas</div>
+                <div class="fin-val" style="color: var(--red)" id="finSai">
+                  R$ 0,00
+                </div>
+              </div>
+              <div
+                class="fin-card"
+                style="border-color: rgba(245, 158, 11, 0.18)"
+              >
+                <div
+                  class="fin-ico"
+                  style="background: var(--amber-g); color: var(--amber)"
+                >
+                  <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div class="fin-lbl">Saldo Líquido</div>
+                <div class="fin-val" id="finSaldo" style="color: var(--amber)">
+                  R$ 0,00
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="ph">
+                <div>
+                  <div class="ph-title">Resumo por Serviço</div>
+                  <div class="ph-sub">Faturamento por categoria</div>
+                </div>
+              </div>
+              <div id="resServ">
+                <div class="empty">
+                  <i class="fa-solid fa-chart-bar"></i>
+                  <p>Nenhum dado disponível</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /pg -->
+      </div>
+      <!-- /main -->
     </div>
+    <!-- /wrap -->
 
-    <div class="servicos-container">
-      <div class="servico-card">
-        <h3>🌬️ Vendas de Equipamentos</h3>
-        <p>Fornecemos os melhores equipamentos de ar condicionado do mercado.</p>
-      </div>
-      <div class="servico-card">
-        <h3>🛠️ Instalação</h3>
-        <p>Instalação rápida e segura por profissionais especializados.</p>
-      </div>
-      <div class="servico-card">
-        <h3>🧼 Higienização</h3>
-        <p>Higienização completa dos filtros e dutos do ar condicionado.</p>
-      </div>
-      <div class="servico-card">
-        <h3>🔧 Manutenção Preventiva</h3>
-        <p>Mantenha seu equipamento sempre em dia com manutenções periódicas.</p>
-      </div>
-      <div class="servico-card">
-        <h3>📞 Assistência Técnica</h3>
-        <p>Suporte técnico rápido e eficiente em qualquer horário.</p>
-      </div>
-    </div>
-  </section>
-
-  <main class="container">
-    <!-- DASHBOARD -->
-    <section class="dashboard">
-      <div class="card kpi">
-        <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
-        <div class="kpi-info">
-          <div class="kpi-label">Clientes</div>
-          <div class="kpi-value" id="kpiClientes">0</div>
+    <!-- FOOTER -->
+    <footer class="ft">
+      <div class="ft-grid">
+        <div>
+          <div class="ft-h">TGS Climatização</div>
+          <p>
+            Especializada em venda, instalação e manutenção de ar condicionado.
+            Profissionais qualificados.
+          </p>
+          <div class="ft-soc">
+            <a
+              class="ft-sb"
+              href="https://api.whatsapp.com/send?phone=5534999319991"
+              target="_blank"
+              ><i class="fab fa-whatsapp"></i
+            ></a>
+            <a class="ft-sb" href="#" target="_blank"
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a class="ft-sb" href="#" target="_blank"
+              ><i class="fab fa-facebook"></i
+            ></a>
+          </div>
+        </div>
+        <div>
+          <div class="ft-h">Serviços</div>
+          <ul>
+            <li>🌬️ Vendas de Equipamentos</li>
+            <li>🛠️ Instalação</li>
+            <li>🧼 Higienização</li>
+            <li>🔧 Manutenção Preventiva</li>
+            <li>📞 Assistência Técnica</li>
+          </ul>
+        </div>
+        <div>
+          <div class="ft-h">Contato</div>
+          <p>
+            <i
+              class="fa-solid fa-location-dot"
+              style="color: var(--blue); margin-right: 5px"
+            ></i
+            >Av. N. Sra. do Desterro 185, Uberaba-MG
+          </p>
+          <p style="margin-top: 5px">
+            <i
+              class="fa-solid fa-phone"
+              style="color: var(--blue); margin-right: 5px"
+            ></i
+            >(34) 99931-9991 / 99979-8788
+          </p>
+          <p style="margin-top: 5px">
+            <i
+              class="fa-solid fa-envelope"
+              style="color: var(--blue); margin-right: 5px"
+            ></i
+            >contato@lojaarcondicionado.com.br
+          </p>
         </div>
       </div>
-
-      <div class="card kpi">
-        <div class="kpi-icon"><i class="fa-solid fa-clipboard-list"></i></div>
-        <div class="kpi-info">
-          <div class="kpi-label">Ordens</div>
-          <div class="kpi-value" id="kpiOrdens">0</div>
-        </div>
+      <div class="ft-copy">
+        © 2025 TGS Climatização. Todos os direitos reservados. Desenvolvido por
+        Wanderson de Farias.
       </div>
+    </footer>
 
-      <div class="card kpi">
-        <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
-        <div class="kpi-info">
-          <div class="kpi-label">Entradas</div>
-          <div class="kpi-value" id="totalEntrada">R$ 0,00</div>
-        </div>
-      </div>
+    <script>
+      /* STORAGE */
+      const SK = { c: "tgs_c", o: "tgs_o" };
+      const rd = (k, f) => {
+        try {
+          const r = localStorage.getItem(k);
+          return r ? JSON.parse(r) : f;
+        } catch {
+          return f;
+        }
+      };
+      const wr = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+      let C = rd(SK.c, []),
+        O = rd(SK.o, []);
+      let fM = "",
+        fD = "",
+        fT = "",
+        fP = "";
 
-      <div class="card kpi">
-        <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
-        <div class="kpi-info">
-          <div class="kpi-label">Saídas</div>
-          <div class="kpi-value" id="totalSaida">R$ 0,00</div>
-        </div>
-      </div>
+      /* HELPERS */
+      const BRL = (v) =>
+        (Number(v) || 0).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      function fmtDT(iso) {
+        if (!iso) return "—";
+        const d = new Date(iso);
+        if (isNaN(d)) return "—";
+        const p = (n) => String(n).padStart(2, "0");
+        return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+      }
+      function sameDay(a, b) {
+        return (
+          a.getFullYear() === b.getFullYear() &&
+          a.getMonth() === b.getMonth() &&
+          a.getDate() === b.getDate()
+        );
+      }
+      function nm(o) {
+        if (!o.pagamentoStatus) o.pagamentoStatus = "Pendente";
+        if (typeof o.formaPagamento !== "string") o.formaPagamento = "";
+      }
+      function ed(o) {
+        return (o?.pagamentoStatus || "Pendente") !== "Pago";
+      }
+      function esc(s) {
+        return String(s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+      function gv(id) {
+        return document.getElementById(id)?.value?.trim() || "";
+      }
 
-      <div class="card kpi highlight">
-        <div class="kpi-icon"><i class="fa-solid fa-wallet"></i></div>
-        <div class="kpi-info">
-          <div class="kpi-label">Saldo</div>
-          <div class="kpi-value" id="saldo">R$ 0,00</div>
-        </div>
-      </div>
-    </section>
+      /* TOAST */
+      function toast(msg, t = "ok") {
+        const el = document.getElementById("toast");
+        const ic = {
+          ok: "fa-circle-check",
+          err: "fa-circle-exclamation",
+          info: "fa-circle-info",
+        };
+        const cl = {
+          ok: "var(--green)",
+          err: "var(--red)",
+          info: "var(--blue)",
+        };
+        el.innerHTML = `<i class="fa-solid ${ic[t]}" style="color:${cl[t]}"></i>${msg}`;
+        el.classList.remove("hidden");
+        clearTimeout(el._t);
+        el._t = setTimeout(() => el.classList.add("hidden"), 3000);
+      }
 
-    <!-- CADASTRO CLIENTE -->
-    <section class="card">
-      <div class="card-header">
-        <h2>Cadastro de Cliente</h2>
-        <p>Cadastre seus clientes para emitir ordens de serviço rapidamente.</p>
-      </div>
+      /* MODAL */
+      function openM(html) {
+        document.getElementById("mCont").innerHTML = html;
+        document.getElementById("mo").classList.remove("hidden");
+      }
+      function closeM() {
+        document.getElementById("mo").classList.add("hidden");
+        document.getElementById("mCont").innerHTML = "";
+      }
+      document.getElementById("mClose").onclick = closeM;
+      document.getElementById("mo").onclick = (e) => {
+        if (e.target === document.getElementById("mo")) closeM();
+      };
 
-      <form id="formCliente" class="grid-form">
-        <input type="text" id="nome" placeholder="Nome" required />
-        <input type="text" id="telefone" placeholder="Telefone" required />
-        <input type="email" id="email" placeholder="Email" required />
-        <input type="text" id="endereco" placeholder="Endereço" required />
-        <button class="btn primary" type="submit"><i class="fa-solid fa-user-plus"></i> Cadastrar Cliente</button>
-      </form>
-    </section>
+      /* NAV */
+      const navMap = {
+        dash: ["Dashboard", "Visão geral do seu negócio"],
+        cli: ["Clientes", "Gerencie sua base de clientes"],
+        ord: ["Ordens de Serviço", "Registre e acompanhe ordens"],
+        fin: ["Financeiro", "Análise financeira completa"],
+      };
+      document.querySelectorAll(".nav-a").forEach((a) => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          const s = a.dataset.sec;
+          document
+            .querySelectorAll(".nav-a")
+            .forEach((x) => x.classList.toggle("active", x.dataset.sec === s));
+          document
+            .querySelectorAll(".sec")
+            .forEach((x) => x.classList.toggle("active", x.id === `sec-${s}`));
+          const m = navMap[s] || ["", ""];
+          document.getElementById("pgH").textContent = m[0];
+          document.getElementById("pgS").textContent = m[1];
+          if (s === "fin") rFin();
+          if (s === "dash") rDash();
+          document.getElementById("sidebar").classList.remove("open");
+        });
+      });
+      document.getElementById("hbg").onclick = () =>
+        document.getElementById("sidebar").classList.toggle("open");
 
-    <!-- CLIENTES -->
-    <section class="card">
-      <div class="card-header">
-        <h2>Clientes Cadastrados</h2>
-        <p>Edite ou exclua clientes quando necessário.</p>
-      </div>
+      /* CLOCK */
+      function tick() {
+        const d = new Date(),
+          p = (n) => String(n).padStart(2, "0");
+        document.getElementById("clk").textContent =
+          `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} — ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+      }
+      tick();
+      setInterval(tick, 1000);
 
-      <div class="table-wrap">
-        <table id="tabelaClientes">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Telefone</th>
-              <th>Email</th>
-              <th>Endereço</th>
-              <th class="th-actions">Ações</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
+      /* COLLAPSIBLE */
+      function ocoll(wId, bId, lblOpen) {
+        document.getElementById(wId).classList.remove("closed");
+        const b = document.getElementById(bId);
+        if (b) b.innerHTML = '<i class="fa-solid fa-xmark"></i> Fechar';
+      }
+      function fcoll(wId, bId, lblOpen) {
+        document.getElementById(wId).classList.add("closed");
+        const b = document.getElementById(bId);
+        if (b) b.innerHTML = `<i class="fa-solid fa-plus"></i> ${lblOpen}`;
+      }
+      document.getElementById("togCli").onclick = () => {
+        const w = document.getElementById("fCliWrap");
+        w.classList.contains("closed")
+          ? ocoll("fCliWrap", "togCli", "Novo Cliente")
+          : fcoll("fCliWrap", "togCli", "Novo Cliente");
+      };
+      document.getElementById("togOrd").onclick = () => {
+        const w = document.getElementById("fOrdWrap");
+        w.classList.contains("closed")
+          ? ocoll("fOrdWrap", "togOrd", "Nova Ordem")
+          : fcoll("fOrdWrap", "togOrd", "Nova Ordem");
+      };
 
-    <!-- ORDEM DE SERVIÇO -->
-    <section class="card">
-      <div class="card-header">
-        <h2>Emitir Ordem de Serviço</h2>
-        <p>Preencha os dados e registre como entrada ou saída. Pagamento pode ser marcado depois na tabela.</p>
-      </div>
+      /* CLIENTES */
+      document.getElementById("fCli").onsubmit = (e) => {
+        e.preventDefault();
+        const nome = gv("fNome"),
+          tel = gv("fTel"),
+          email = gv("fEmail"),
+          end = gv("fEnd");
+        if (!nome || !tel || !email || !end) {
+          toast("Preencha todos os campos!", "err");
+          return;
+        }
+        C.push({ id: Date.now(), nome, telefone: tel, email, endereco: end });
+        wr(SK.c, C);
+        rCli();
+        uSel();
+        uKPI();
+        document.getElementById("fCli").reset();
+        fcoll("fCliWrap", "togCli", "Novo Cliente");
+        toast(`Cliente "${nome}" cadastrado!`);
+      };
 
-      <form id="formOrdem" class="grid-form">
-        <select id="clienteSelect" required>
-          <option value="">Selecione um cliente</option>
-        </select>
+      function rCli() {
+        const tb = document.querySelector("#tCli tbody"),
+          ep = document.getElementById("empCli");
+        const q = gv("bCli").toLowerCase();
+        const l = q
+          ? C.filter((c) =>
+              `${c.nome} ${c.telefone} ${c.email}`.toLowerCase().includes(q),
+            )
+          : C;
+        tb.innerHTML = "";
+        document.getElementById("cliLbl").textContent =
+          `${C.length} cliente${C.length !== 1 ? "s" : ""} no sistema`;
+        if (!C.length) {
+          ep.classList.remove("hidden");
+          return;
+        }
+        ep.classList.add("hidden");
+        l.forEach((c) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td class="td-b">${esc(c.nome)}</td><td>${esc(c.telefone)}</td><td>${esc(c.email)}</td><td>${esc(c.endereco)}</td><td class="td-r"><div class="td-act"><button class="tb tb-e" onclick="eCli(${c.id})"><i class="fa-solid fa-pen"></i> Editar</button><button class="tb tb-d" onclick="dCli(${c.id})"><i class="fa-solid fa-trash"></i></button></div></td>`;
+          tb.appendChild(tr);
+        });
+      }
+      document.getElementById("bCli").oninput = rCli;
 
-        <input type="text" id="enderecoCliente" readonly placeholder="Endereço do cliente" />
+      function uSel() {
+        const s = document.getElementById("selCli");
+        s.innerHTML = '<option value="">Selecione um cliente</option>';
+        C.forEach((c) => {
+          const o = document.createElement("option");
+          o.value = c.nome;
+          o.textContent = c.nome;
+          o.dataset.e = c.endereco;
+          s.appendChild(o);
+        });
+      }
+      document.getElementById("selCli").onchange = function () {
+        const o = this.options[this.selectedIndex];
+        document.getElementById("endCli").value = o?.dataset?.e || "";
+      };
 
-        <select id="servico" required>
-          <option value="">Selecione o Serviço</option>
-          <option value="Vendas de Equipamentos">Vendas de Equipamentos</option>
-          <option value="Instalação">Instalação</option>
-          <option value="Higienização">Higienização</option>
-          <option value="Manutenção Preventiva">Manutenção Preventiva</option>
-          <option value="Assistência Técnica">Assistência Técnica</option>
-        </select>
+      window.eCli = function (id) {
+        const c = C.find((x) => x.id === id);
+        if (!c) return;
+        openM(
+          `<div class="mt"><i class="fa-solid fa-user-pen" style="color:var(--blue);margin-right:7px"></i>Editar Cliente</div><div class="md">Atualize os dados do cliente</div><div class="mf"><label>Nome</label><input id="mN" value="${esc(c.nome)}"/></div><div class="mf"><label>Telefone</label><input id="mT" value="${esc(c.telefone)}"/></div><div class="mf"><label>Email</label><input id="mE" value="${esc(c.email)}"/></div><div class="mf"><label>Endereço</label><input id="mEnd" value="${esc(c.endereco)}"/></div><div class="ma"><button class="btn-cc" onclick="closeM()">Cancelar</button><button class="btn-p" onclick="svCli(${id})"><i class="fa-solid fa-floppy-disk"></i> Salvar</button></div>`,
+        );
+      };
+      window.svCli = function (id) {
+        const c = C.find((x) => x.id === id);
+        if (!c) return;
+        const nome = document.getElementById("mN").value.trim(),
+          tel = document.getElementById("mT").value.trim(),
+          email = document.getElementById("mE").value.trim(),
+          end = document.getElementById("mEnd").value.trim();
+        if (!nome || !tel || !email || !end) {
+          toast("Preencha todos!", "err");
+          return;
+        }
+        const old = c.nome;
+        c.nome = nome;
+        c.telefone = tel;
+        c.email = email;
+        c.endereco = end;
+        O = O.map((o) =>
+          o.cliente === old ? { ...o, cliente: nome, endereco: end } : o,
+        );
+        wr(SK.c, C);
+        wr(SK.o, O);
+        rCli();
+        uSel();
+        rOrd();
+        uKPI();
+        closeM();
+        toast("Cliente atualizado!");
+      };
+      window.dCli = function (id) {
+        const c = C.find((x) => x.id === id);
+        if (!c) return;
+        openM(
+          `<div class="mt"><i class="fa-solid fa-triangle-exclamation" style="color:var(--red);margin-right:7px"></i>Excluir Cliente</div><div class="md">Tem certeza que deseja excluir <strong>${esc(c.nome)}</strong>?</div><div class="ma"><button class="btn-cc" onclick="closeM()">Cancelar</button><button class="btn-p danger" onclick="cfDCli(${id})"><i class="fa-solid fa-trash"></i> Excluir</button></div>`,
+        );
+      };
+      window.cfDCli = function (id) {
+        C = C.filter((x) => x.id !== id);
+        wr(SK.c, C);
+        rCli();
+        uSel();
+        uKPI();
+        closeM();
+        toast("Cliente excluído.", "err");
+      };
 
-        <input type="number" id="valor" placeholder="Valor (R$)" step="0.01" required />
+      /* ORDENS */
+      document.getElementById("fOrd").onsubmit = (e) => {
+        e.preventDefault();
+        const cli = document.getElementById("selCli").value,
+          end = document.getElementById("endCli").value.trim();
+        const srv = gv("selServ"),
+          valS = gv("fVal"),
+          tipo = gv("fTipo"),
+          dt = document.getElementById("fDT").value;
+        const resp = gv("fResp"),
+          st = gv("fStatus"),
+          conc = gv("fConc"),
+          ass = gv("fAss");
+        if (!cli || !srv || !valS || !tipo || !dt || !resp || !st || !ass) {
+          toast("Preencha todos os campos obrigatórios!", "err");
+          return;
+        }
+        const val = Number(valS);
+        O.push({
+          id: Date.now(),
+          cliente: cli,
+          endereco: end,
+          servico: srv,
+          valor: +val.toFixed(2),
+          tipo,
+          dataHora: dt,
+          responsavel: resp,
+          assinaturaCliente: ass,
+          status: st,
+          concluidoPor: conc || "",
+          pagamentoStatus: "Pendente",
+          formaPagamento: "",
+        });
+        wr(SK.o, O);
+        document.getElementById("fOrd").reset();
+        document.getElementById("endCli").value = "";
+        fcoll("fOrdWrap", "togOrd", "Nova Ordem");
+        rOrd();
+        uKPI();
+        toast("Ordem emitida!");
+      };
 
-        <input type="datetime-local" id="dataHora" required />
+      window.excOrdem = function (id) {
+        openM(
+          `<div class="mt"><i class="fa-solid fa-triangle-exclamation" style="color:var(--red);margin-right:7px"></i>Excluir Ordem</div><div class="md">Tem certeza que deseja excluir esta ordem?</div><div class="ma"><button class="btn-cc" onclick="closeM()">Cancelar</button><button class="btn-p danger" onclick="cfDOrd(${id})"><i class="fa-solid fa-trash"></i> Excluir</button></div>`,
+        );
+      };
+      window.cfDOrd = function (id) {
+        O = O.filter((o) => o.id !== id);
+        wr(SK.o, O);
+        rOrd();
+        uKPI();
+        closeM();
+        toast("Ordem excluída.", "err");
+      };
 
-        <select id="tipo" required>
-          <option value="">Tipo</option>
-          <option value="entrada">Entrada</option>
-          <option value="saida">Saída</option>
-        </select>
+      window.edOrdem = function (id) {
+        const o = O.find((x) => x.id === id);
+        if (!o) return;
+        nm(o);
+        if (!ed(o)) {
+          toast("Ordem PAGA — edição bloqueada.", "err");
+          return;
+        }
+        const opts = (s) =>
+          [
+            "Vendas de Equipamentos",
+            "Instalação",
+            "Higienização",
+            "Manutenção Preventiva",
+            "Assistência Técnica",
+          ]
+            .map((x) => `<option${x === s ? " selected" : ""}>${x}</option>`)
+            .join("");
+        openM(
+          `<div class="mt"><i class="fa-solid fa-pen-to-square" style="color:var(--blue);margin-right:7px"></i>Editar Ordem</div><div class="md">Atualize os dados</div><div class="mf"><label>Serviço</label><select id="eS">${opts(o.servico)}</select></div><div class="mf"><label>Valor (R$)</label><input id="eV" type="number" step="0.01" value="${o.valor}"/></div><div class="mf"><label>Data/Hora</label><input id="eDT" type="datetime-local" value="${o.dataHora}"/></div><div class="mf"><label>Responsável</label><input id="eR" value="${esc(o.responsavel)}"/></div><div class="mf"><label>Assinatura do Cliente</label><input id="eA" value="${esc(o.assinaturaCliente || "")}"/></div><div class="mf"><label>Status</label><select id="eSt"><option${o.status === "Pendente" ? " selected" : ""}>Pendente</option><option${o.status === "Concluído" ? " selected" : ""}>Concluído</option><option${o.status === "Cancelado" ? " selected" : ""}>Cancelado</option></select></div><div class="mf"><label>Concluído por</label><input id="eC" value="${esc(o.concluidoPor || "")}"/></div><div class="ma"><button class="btn-cc" onclick="closeM()">Cancelar</button><button class="btn-p" onclick="svOrd(${id})"><i class="fa-solid fa-floppy-disk"></i> Salvar</button></div>`,
+        );
+      };
+      window.svOrd = function (id) {
+        const o = O.find((x) => x.id === id);
+        if (!o) return;
+        const v = Number(document.getElementById("eV").value);
+        if (!Number.isFinite(v)) {
+          toast("Valor inválido", "err");
+          return;
+        }
+        o.servico = document.getElementById("eS").value;
+        o.valor = +v.toFixed(2);
+        o.dataHora = document.getElementById("eDT").value || o.dataHora;
+        o.responsavel =
+          document.getElementById("eR").value.trim() || o.responsavel;
+        o.assinaturaCliente = document.getElementById("eA").value.trim();
+        o.status = document.getElementById("eSt").value;
+        o.concluidoPor = document.getElementById("eC").value.trim();
+        wr(SK.o, O);
+        rOrd();
+        uKPI();
+        closeM();
+        toast("Ordem atualizada!");
+      };
 
-        <select id="statusOrdem" required>
-          <option value="">Status da Ordem</option>
-          <option value="Pendente">Pendente</option>
-          <option value="Concluído">Concluído</option>
-          <option value="Cancelado">Cancelado</option>
-        </select>
+      window.altPag = function (id) {
+        const o = O.find((x) => x.id === id);
+        if (!o) return;
+        nm(o);
+        if (o.pagamentoStatus === "Pago") {
+          openM(
+            `<div class="mt"><i class="fa-solid fa-rotate-left" style="color:var(--amber);margin-right:7px"></i>Reverter Pagamento</div><div class="md">Deseja voltar para <strong>Pendente</strong>?</div><div class="ma"><button class="btn-cc" onclick="closeM()">Cancelar</button><button class="btn-p" onclick="rvPag(${id})"><i class="fa-solid fa-rotate-left"></i> Reverter</button></div>`,
+          );
+          return;
+        }
+        openM(
+          `<div class="mt"><i class="fa-solid fa-credit-card" style="color:var(--green);margin-right:7px"></i>Registrar Pagamento</div><div class="md">Selecione a forma de pagamento</div><div class="mf"><label>Forma de Pagamento</label><select id="mMet"><option>Pix</option><option>Dinheiro</option><option>Cartão</option></select></div><div class="ma"><button class="btn-cc" onclick="closeM()">Cancelar</button><button class="btn-p" onclick="cfPag(${id})"><i class="fa-solid fa-check"></i> Confirmar</button></div>`,
+        );
+      };
+      window.rvPag = function (id) {
+        const o = O.find((x) => x.id === id);
+        if (!o) return;
+        o.pagamentoStatus = "Pendente";
+        o.formaPagamento = "";
+        wr(SK.o, O);
+        rOrd();
+        closeM();
+        toast("Revertido para Pendente.", "info");
+      };
+      window.cfPag = function (id) {
+        const o = O.find((x) => x.id === id);
+        if (!o) return;
+        o.pagamentoStatus = "Pago";
+        o.formaPagamento = document.getElementById("mMet").value;
+        wr(SK.o, O);
+        rOrd();
+        closeM();
+        toast("Pagamento registrado!");
+      };
 
-        <input type="text" id="responsavel" placeholder="Responsável pela atividade" required />
-        <input type="text" id="concluidoPor" placeholder="Concluído por (opcional)" />
-        <input type="text" id="assinaturaCliente" placeholder="Assinatura do Cliente" required />
+      /* PDF */
+      window.gerarPDF = function (id) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const o = O.find((x) => x.id === id);
+        if (!o) return;
+        nm(o);
+        doc.setFillColor(37, 99, 235);
+        doc.rect(0, 0, 210, 42, "F");
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.text("ORDEM DE SERVIÇO", 105, 17, { align: "center" });
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+          "TGS Climatização  •  Av. N. Sra. do Desterro 185 - Uberaba/MG  •  (34) 99931-9991",
+          105,
+          30,
+          { align: "center" },
+        );
+        doc.setTextColor(20, 20, 20);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        let y = 52;
+        const L = 13,
+          g = 8.5;
+        const row = (l, v) => {
+          doc.setFont("helvetica", "bold");
+          doc.text(l + ":", L, y);
+          doc.setFont("helvetica", "normal");
+          doc.text(String(v || "—"), L + 40, y);
+          y += g;
+        };
+        row("Nº OS", String(o.id));
+        row("Cliente", o.cliente);
+        row("Endereço", o.endereco);
+        row("Responsável", o.responsavel);
+        row("Serviço", o.servico);
+        row("Valor", BRL(o.valor));
+        row("Data/Hora", fmtDT(o.dataHora));
+        row("Tipo", o.tipo === "entrada" ? "Entrada" : "Saída");
+        row("Status", o.status);
+        row("Pagamento", o.pagamentoStatus);
+        row("Método", o.formaPagamento || "—");
+        if (o.concluidoPor) row("Concluído por", o.concluidoPor);
+        doc.setDrawColor(210, 210, 210);
+        doc.setLineWidth(0.25);
+        doc.line(L, y + 3, 196, y + 3);
+        const yA = 185;
+        doc.line(L, yA, 94, yA);
+        doc.setFontSize(8);
+        doc.text("Assinatura do Cliente", L, yA + 6);
+        doc.line(115, yA, 196, yA);
+        doc.text("Assinatura do Responsável", 115, yA + 6);
+        doc.setFillColor(248, 248, 248);
+        doc.rect(0, 282, 210, 15, "F");
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        doc.text("Documento gerado pelo Sistema TGS Climatização", 105, 290, {
+          align: "center",
+        });
+        doc.save(`OS_${o.id}.pdf`);
+        toast("PDF gerado!");
+      };
 
-        <button class="btn primary" type="submit"><i class="fa-solid fa-file-circle-plus"></i> Emitir Ordem</button>
-      </form>
+      /* FILTROS */
+      document.getElementById("btnFltMes").onclick = () => {
+        fM = document.getElementById("fltMes").value;
+        rOrd();
+      };
+      document.getElementById("btnFltDt").onclick = () => {
+        fD = document.getElementById("fltDt").value;
+        rOrd();
+      };
+      document.getElementById("btnMesAnt").onclick = () => {
+        const h = new Date(),
+          a = new Date(h.getFullYear(), h.getMonth() - 1, 1);
+        fM = `${a.getFullYear()}-${String(a.getMonth() + 1).padStart(2, "0")}`;
+        document.getElementById("fltMes").value = fM;
+        rOrd();
+      };
+      document.getElementById("bOrd").oninput = (e) => {
+        fT = e.target.value.trim().toLowerCase();
+        rOrd();
+      };
+      document.getElementById("fltPag").onchange = (e) => {
+        fP = e.target.value;
+        rOrd();
+      };
+      document.getElementById("btnLimFlt").onclick = () => {
+        fM = "";
+        fD = "";
+        fT = "";
+        fP = "";
+        ["fltMes", "fltDt", "bOrd", "fltPag"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+        rOrd();
+        toast("Filtros limpos.", "info");
+      };
 
-      <div class="note">
-        <i class="fa-solid fa-shield-halved"></i>
-        <span>
-          <strong>Regras:</strong>
-          <br>• Se a ordem estiver <strong>PAGA</strong>, a edição fica bloqueada.
-          <br>• Pagamento pode ser alternado entre <strong>Pendente</strong> e <strong>Pago</strong> com método (Pix/Dinheiro/Cartão).
-        </span>
-      </div>
-    </section>
+      function apFlt(l) {
+        let r = [...l];
+        if (fM) {
+          const [af, mf] = fM.split("-");
+          r = r.filter((o) => {
+            const d = new Date(o.dataHora);
+            if (isNaN(d)) return false;
+            return (
+              String(d.getFullYear()) === af &&
+              String(d.getMonth() + 1).padStart(2, "0") === mf
+            );
+          });
+        }
+        if (fD) {
+          const ds = new Date(fD);
+          ds.setHours(0, 0, 0, 0);
+          if (!isNaN(ds))
+            r = r.filter((o) => {
+              const d = new Date(o.dataHora);
+              return !isNaN(d) && sameDay(d, ds);
+            });
+        }
+        if (fT)
+          r = r.filter((o) =>
+            `${o.cliente} ${o.servico} ${o.responsavel} ${o.status}`
+              .toLowerCase()
+              .includes(fT),
+          );
+        if (fP)
+          r = r.filter((o) => {
+            nm(o);
+            return (o.pagamentoStatus || "Pendente") === fP;
+          });
+        return r;
+      }
 
-    <!-- FILTROS -->
-    <section class="card">
-      <div class="card-header">
-        <h2>Filtrar e Buscar Ordens</h2>
-        <p>Encontre ordens por mês, data específica, texto e pagamento.</p>
-      </div>
+      /* STATUS BADGE */
+      function sBadge(s) {
+        const m = {
+          Concluído: "bg-s fa-circle-check",
+          Pendente: "bg-w fa-clock",
+          Cancelado: "bg-d fa-circle-xmark",
+        };
+        const c = (m[s] || "bg-i fa-circle-info").split(" ");
+        return `<span class="badge ${c[0]}"><i class="fa-solid ${c[1]}"></i> ${s || "—"}</span>`;
+      }
+      function pBadge(p) {
+        const ok = (p || "Pendente") === "Pago";
+        return ok
+          ? `<span class="badge bg-s"><i class="fa-solid fa-money-bill-wave"></i> Pago</span>`
+          : `<span class="badge bg-w"><i class="fa-solid fa-hourglass-half"></i> Pendente</span>`;
+      }
 
-      <div class="filters">
-        <form id="formFiltroMes" class="inline-form">
-          <label class="label">Mês</label>
-          <input type="month" id="filtroMes" />
-          <button class="btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
-          <button class="btn ghost" type="button" id="btnMesAnterior"><i class="fa-solid fa-arrow-left"></i> Mês Anterior</button>
-        </form>
+      /* RENDER ORDENS */
+      function rOrd() {
+        const tb = document.querySelector("#tOrd tbody"),
+          ep = document.getElementById("empOrd");
+        O.forEach(nm);
+        const l = apFlt(O);
+        let ent = 0,
+          sai = 0;
+        tb.innerHTML = "";
+        document.getElementById("ordLbl").textContent =
+          `${l.length} ordem${l.length !== 1 ? "s" : ""} encontrada${l.length !== 1 ? "s" : ""}`;
+        if (!l.length) ep.classList.remove("hidden");
+        else ep.classList.add("hidden");
+        l.forEach((o) => {
+          const v = Number(o.valor) || 0;
+          if (o.tipo === "entrada") ent += v;
+          else sai += v;
+          const pode = ed(o),
+            cor = o.tipo === "entrada" ? "var(--green)" : "var(--red)";
+          const tl =
+            o.tipo === "entrada"
+              ? `<span style="color:var(--green);font-weight:700">💰 Entrada</span>`
+              : `<span style="color:var(--red);font-weight:700">💸 Saída</span>`;
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td class="td-b">${esc(o.cliente || "—")}</td><td>${esc(o.responsavel || "—")}</td><td>${esc(o.servico || "—")}</td><td style="color:${cor};font-weight:800">${BRL(v)}</td><td>${fmtDT(o.dataHora)}</td><td>${tl}</td><td>${sBadge(o.status)}</td><td>${pBadge(o.pagamentoStatus)}</td><td>${esc(o.formaPagamento || "—")}</td><td class="td-r"><div class="td-act"><button class="tb tb-p" onclick="altPag(${o.id})"><i class="fa-solid fa-credit-card"></i>${o.pagamentoStatus === "Pago" ? "Reverter" : "Pagar"}</button><button class="tb tb-e" onclick="edOrdem(${o.id})" ${!pode ? 'disabled title="Paga"' : ""}><i class="fa-solid fa-pen"></i></button><button class="tb tb-d" onclick="excOrdem(${o.id})"><i class="fa-solid fa-trash"></i></button><button class="tb tb-f" onclick="gerarPDF(${o.id})"><i class="fa-solid fa-file-pdf"></i> PDF</button></div></td>`;
+          tb.appendChild(tr);
+        });
+        /* TOTAIS */
+        const saldo = ent - sai;
+        const upd = (ids, val) =>
+          ids.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val;
+          });
+        upd(["kpiEnt", "drEnt", "finEnt"], BRL(ent));
+        upd(["kpiSai", "drSai", "finSai"], BRL(sai));
+        const cor = saldo >= 0 ? "var(--green)" : "var(--red)";
+        ["kpiSaldo", "drSaldo", "finSaldo"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.textContent = BRL(saldo);
+            el.style.color = cor;
+          }
+        });
+        /* Barra */
+        const pct =
+          ent > 0
+            ? Math.min(100, Math.round((ent / (ent + (sai || 1))) * 100))
+            : 50;
+        const fl = document.getElementById("saldoFill");
+        if (fl) fl.style.width = pct + "%";
+        /* Trend */
+        const st = document.getElementById("saldoTrend");
+        if (st) {
+          if (saldo > 0) {
+            st.className = "kpi-badge b-up";
+            st.innerHTML = '<i class="fa-solid fa-arrow-up"></i> Positivo';
+          } else if (saldo < 0) {
+            st.className = "kpi-badge b-down";
+            st.innerHTML = '<i class="fa-solid fa-arrow-down"></i> Negativo';
+          } else {
+            st.className = "kpi-badge b-neu";
+            st.innerHTML =
+              '<i class="fa-solid fa-scale-balanced"></i> Equilíbrio';
+          }
+        }
+        rDash();
+      }
 
-        <form id="formFiltroData" class="inline-form">
-          <label class="label">Data</label>
-          <input type="date" id="filtroData" />
-          <button class="btn" type="submit"><i class="fa-solid fa-calendar-day"></i> Buscar</button>
-        </form>
+      /* DASHBOARD */
+      function rDash() {
+        const w = document.getElementById("recList");
+        if (!w) return;
+        const ul = [...O].sort((a, b) => b.id - a.id).slice(0, 5);
+        if (!ul.length) {
+          w.innerHTML =
+            '<div class="empty" style="padding:24px 14px"><i class="fa-solid fa-clipboard-list"></i><p>Nenhuma ordem ainda</p></div>';
+          return;
+        }
+        w.innerHTML = ul
+          .map((o) => {
+            nm(o);
+            const cor = o.tipo === "entrada" ? "var(--green)" : "var(--red)";
+            const dc =
+              o.pagamentoStatus === "Pago"
+                ? "var(--green)"
+                : o.status === "Cancelado"
+                  ? "var(--red)"
+                  : "var(--amber)";
+            return `<div class="rec-item"><div class="rec-dot" style="background:${dc}"></div><div style="flex:1;min-width:0"><div class="rec-nome">${esc(o.cliente)}</div><div class="rec-serv">${esc(o.servico)} · ${fmtDT(o.dataHora).split(" ")[0]}</div></div><div class="rec-val" style="color:${cor}">${BRL(o.valor)}</div></div>`;
+          })
+          .join("");
+      }
 
-        <div class="inline-form">
-          <label class="label">Busca</label>
-          <input type="text" id="buscaTexto" placeholder="Buscar por cliente, serviço ou responsável..." />
-        </div>
+      /* FINANCEIRO */
+      function rFin() {
+        const w = document.getElementById("resServ");
+        const m = {};
+        O.forEach((o) => {
+          if (!m[o.servico]) m[o.servico] = { t: 0, c: 0, e: 0, s: 0 };
+          m[o.servico].t += Number(o.valor) || 0;
+          m[o.servico].c++;
+          if (o.tipo === "entrada") m[o.servico].e += Number(o.valor) || 0;
+          else m[o.servico].s += Number(o.valor) || 0;
+        });
+        const l = Object.entries(m).sort((a, b) => b[1].t - a[1].t);
+        if (!l.length) {
+          w.innerHTML =
+            '<div class="empty"><i class="fa-solid fa-chart-bar"></i><p>Nenhum dado disponível</p></div>';
+          return;
+        }
+        const mx = l[0][1].t || 1;
+        w.innerHTML = l
+          .map(([n, { t, c, e, s }]) => {
+            const p = Math.round((t / mx) * 100);
+            return `<div style="padding:13px 18px;border-bottom:1px solid var(--border)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><div><span style="font-weight:700;color:var(--text);font-size:.88rem">${n}</span><span style="font-size:.72rem;color:var(--text3);margin-left:7px">${c} ordem${c !== 1 ? "s" : ""}</span></div><span style="font-weight:900;color:var(--green);font-size:.92rem">${BRL(t)}</span></div><div style="height:5px;background:var(--panel2);border-radius:99px;overflow:hidden"><div style="height:100%;width:${p}%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:99px"></div></div><div style="display:flex;gap:14px;margin-top:4px"><span style="font-size:.72rem;color:var(--green)"><i class="fa-solid fa-arrow-up"></i> ${BRL(e)}</span><span style="font-size:.72rem;color:var(--red)"><i class="fa-solid fa-arrow-down"></i> ${BRL(s)}</span></div></div>`;
+          })
+          .join("");
+      }
 
-        <div class="inline-form">
-          <label class="label">Pagamento</label>
-          <select id="filtroPagamento">
-            <option value="">Todos</option>
-            <option value="Pendente">Pendente</option>
-            <option value="Pago">Pago</option>
-          </select>
+      /* KPIs */
+      function uKPI() {
+        document.getElementById("kpiC").textContent = String(C.length);
+        document.getElementById("kpiO").textContent = String(O.length);
+      }
 
-          <button class="btn ghost" type="button" id="btnLimparFiltros"><i class="fa-solid fa-eraser"></i> Limpar</button>
-        </div>
-      </div>
-    </section>
+      /* LIMPAR */
+      document.getElementById("btnClr").onclick = () => {
+        openM(
+          `<div class="mt"><i class="fa-solid fa-triangle-exclamation" style="color:var(--red);margin-right:7px"></i>Limpar Todos os Dados</div><div class="md">Esta ação apagará <strong>todos os clientes e ordens</strong>. Não pode ser desfeita.</div><div class="ma"><button class="btn-cc" onclick="closeM()">Cancelar</button><button class="btn-p danger" onclick="cfClr()"><i class="fa-solid fa-trash"></i> Limpar Tudo</button></div>`,
+        );
+      };
+      window.cfClr = function () {
+        C = [];
+        O = [];
+        wr(SK.c, C);
+        wr(SK.o, O);
+        fM = "";
+        fD = "";
+        fT = "";
+        fP = "";
+        ["fltMes", "fltDt", "bOrd", "fltPag"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+        rCli();
+        uSel();
+        rOrd();
+        uKPI();
+        closeM();
+        toast("Dados apagados.", "err");
+      };
 
-    <!-- ORDENS -->
-    <section class="card">
-      <div class="card-header">
-        <h2>Ordens de Serviço</h2>
-        <p>Gerencie ordens, gere PDF, marque como pago/pendente e acompanhe o financeiro.</p>
-      </div>
-
-      <div class="table-wrap">
-        <table id="tabelaOrdens">
-          <thead>
-            <tr>
-              <th>Cliente</th>
-              <th>Responsável</th>
-              <th>Serviço</th>
-              <th>Valor</th>
-              <th>Data/Hora</th>
-              <th>Tipo</th>
-              <th>Status</th>
-              <th>Pagamento</th>
-              <th>Método</th>
-              <th class="th-actions">Ações</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      <div class="footer-section about">
-        <h3>Sobre Nós</h3>
-        <p>A Loja TGS é especializada na venda e instalação de ar condicionado. Oferecemos higienização, manutenção e assistência técnica com profissionais qualificados.</p>
-      </div>
-
-      <div class="footer-section services">
-        <h3>Nossos Serviços</h3>
-        <ul>
-          <li>🌬️ Vendas de Equipamentos</li>
-          <li>🛠️ Instalação</li>
-          <li>🧼 Higienização</li>
-          <li>🔧 Manutenção Preventiva</li>
-          <li>📞 Assistência Técnica</li>
-        </ul>
-      </div>
-
-      <div class="footer-section contact">
-        <h3>Contato</h3>
-        <p><strong>Endereço:</strong> Av. Nossa Senhora do Desterro 185, Uberaba-MG</p>
-        <p><strong>Telefone:</strong> (34) 99931-9991 / 99979-8788</p>
-        <p><strong>Email:</strong> contato@lojaarcondicionado.com.br</p>
-
-        <div class="social-links">
-          <a href="https://api.whatsapp.com/send?phone=5534999319991" target="_blank" rel="noreferrer">
-            <i class="fab fa-whatsapp"></i> WhatsApp
-          </a>
-          <a href="https://instagram.com/seu_perfil" target="_blank" rel="noreferrer">
-            <i class="fab fa-instagram"></i> Instagram
-          </a>
-          <a href="https://facebook.com/suaempresa" target="_blank" rel="noreferrer">
-            <i class="fab fa-facebook"></i> Facebook
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>&copy; 2025 Loja de Ar Condicionado TGS. Todos os Direitos Reservados. Desenvolvido por Wanderson de Farias.</p>
-    </div>
-  </footer>
-
-  <script src="script.js"></script>
-</body>
+      /* INIT */
+      rCli();
+      uSel();
+      rOrd();
+      uKPI();
+      rDash();
+    </script>
+  </body>
 </html>
